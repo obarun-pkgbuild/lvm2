@@ -6,7 +6,7 @@
 pkgbase=lvm2
 pkgname=('lvm2' 'device-mapper')
 pkgver=2.02.174
-pkgrel=2
+pkgrel=3
 arch=('x86_64')
 url="http://sourceware.org/lvm2/"
 license=('GPL2' 'LGPL2.1')
@@ -17,11 +17,13 @@ groups=('base')
 source=(https://mirrors.kernel.org/sourceware/lvm2/releases/LVM2.${pkgver}.tgz
         lvm2_install
         lvm2_hook
-        11-dm-initramfs.rules)
+        11-dm-initramfs.rules
+        0002-toollib_fix_parentheses_in_assignment_comparison.patch)
 sha1sums=('39a0a03e3a25ba54e1e79e849681cb1f16b66e4e'
           '664258ebd7dd3459f79fffa464b267db0d7109dd'
           '81fc438356216abdaead0742555e1719e6ff3127'
-          'f6a554eea9557c3c236df2943bb6e7e723945c41')
+          'f6a554eea9557c3c236df2943bb6e7e723945c41'
+          'de020e21b43316a2b9446dc9165d29260bcfefcb')
 validpgpkeys=('6DD4217456569BA711566AC7F06E8FDE7B45DAAC') # Eric Vidal
 
 prepare() {
@@ -29,6 +31,9 @@ prepare() {
 
   # enable lvmetad
   sed -i 's|use_lvmetad = 0|use_lvmetad = 1|' conf/example.conf.in
+  
+  # toollib: fix parentheses in assignment + comparison
+  patch -p1 -i "${srcdir}/0002-toollib_fix_parentheses_in_assignment_comparison.patch"
   
 }
 
