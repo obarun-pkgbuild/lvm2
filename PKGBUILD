@@ -5,7 +5,7 @@
 
 pkgbase=lvm2
 pkgname=('lvm2' 'device-mapper')
-pkgver=2.02.175
+pkgver=2.02.176
 pkgrel=2
 arch=('x86_64')
 url="http://sourceware.org/lvm2/"
@@ -18,7 +18,7 @@ source=(https://mirrors.kernel.org/sourceware/lvm2/releases/LVM2.${pkgver}.tgz
         lvm2_install
         lvm2_hook
         11-dm-initramfs.rules)
-sha1sums=('11f0a866ea2a4be6002de85d50a437e3d8c9935d'
+sha1sums=('c81acc5e68656144a378e8f49a3cd6dc2598287e'
           '664258ebd7dd3459f79fffa464b267db0d7109dd'
           '81fc438356216abdaead0742555e1719e6ff3127'
           'f6a554eea9557c3c236df2943bb6e7e723945c41')
