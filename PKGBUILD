@@ -5,7 +5,7 @@
 
 pkgbase=lvm2
 pkgname=('lvm2' 'device-mapper')
-pkgver=2.02.176
+pkgver=2.02.177
 pkgrel=2
 arch=('x86_64')
 url="http://sourceware.org/lvm2/"
@@ -33,37 +33,46 @@ prepare() {
 }
 
 build() {
-	
-	cp -a LVM2.${pkgver} LVM2-initramfs
-	cd LVM2-initramfs
-  ./configure \
-		--prefix=/usr \
-		--sysconfdir=/etc \
-		--localstatedir=/var \
-		--sbindir=/usr/bin \
-        --enable-pkgconfig \
-        --enable-readline \
-        --enable-dmeventd \
-        --enable-cmdlib \
-        --enable-applib \
-        --enable-udev_sync \
-        --enable-udev_rules \
-        --enable-udev-rule-exec-detection \
-        --enable-lvmetad \
-        --with-thin=internal \
-        --with-cache=internal \
-		--disable-udev-systemd-background-jobs \
-		--with-udev-prefix=/usr \
-		--with-udevdir=/usr/lib/udev/rules.d \
-        --with-systemdsystemunitdir=no \
-        --with-tmpfilesdir=no \
-		--with-default-locking-dir=/run/lock/lvm \
-		--with-default-pid-dir=/run \
-		--with-default-dm-run-dir=/run \
-		--with-default-run-dir=/run/lvm \
-		--with-lvmetad-pidfile=/run \
-		--with-dmeventd-path=/usr/bin \
-		
+
+ 	local CONFIGUREOPTS=(
+		--prefix=/usr
+		--sbindir=/usr/bin
+		--sysconfdir=/etc
+		--localstatedir=/var
+        --enable-applib
+        --enable-cmdlib
+        --enable-dmeventd
+        --enable-lvmetad
+		--enable-lvmpolld
+        --enable-pkgconfig
+        --enable-readline
+        --enable-udev_rules
+        --enable-udev_sync
+        --with-cache=internal
+        --with-default-dm-run-dir=/run
+        --with-default-locking-dir=/run/lock/lvm
+        --with-default-pid-dir=/run
+        --with-default-run-dir=/run/lvm
+        --with-thin=internal
+        --with-udev-prefix=/usr
+        --enable-udev-rule-exec-detection
+        --with-udevdir=/usr/lib/udev/rules.d
+		--with-dmeventd-path=/usr/bin
+		--with-lvmetad-pidfile=/run
+		--disable-udev-systemd-background-jobs
+        --with-systemdsystemunitdir=no
+        --with-tmpfilesdir=no
+		)
+  cp -a LVM2.${pkgver} LVM2-initramfs
+
+  cd LVM2.${pkgver}
+
+  ./configure "${CONFIGUREOPTS[@]}"
+  make
+  # Build legacy udev rule for initramfs
+  cd ../LVM2-initramfs
+  ./configure "${CONFIGUREOPTS[@]}"
+ 
   cd udev
   make 69-dm-lvm-metad.rules
 }
@@ -73,7 +82,8 @@ package_device-mapper() {
   url="http://sourceware.org/dm/"
   depends=(glibc)
   provides=('device-mapper=$pkgver')
-  cd LVM2-initramfs
+  
+  cd LVM2.${pkgver}
   make DESTDIR="${pkgdir}" install_device-mapper
   # extra udev rule for device-mapper in initramfs
   install -D -m644 "${srcdir}/11-dm-initramfs.rules" "${pkgdir}/usr/lib/initcpio/udev/11-dm-initramfs.rules"
@@ -88,7 +98,7 @@ package_lvm2() {
   options=('!makeflags')
   install=lvm2.install
 
-  cd LVM2-initramfs
+  cd LVM2.${pkgver}
   make DESTDIR="${pkgdir}" install_lvm2
   # install applib
   make -C liblvm DESTDIR="${pkgdir}" install
