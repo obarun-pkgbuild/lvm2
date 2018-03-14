@@ -6,7 +6,7 @@
 pkgbase=lvm2
 pkgname=('lvm2' 'device-mapper')
 pkgver=2.02.177
-pkgrel=2
+pkgrel=6
 arch=('x86_64')
 url="http://sourceware.org/lvm2/"
 license=('GPL2' 'LGPL2.1')
@@ -18,19 +18,12 @@ source=(https://mirrors.kernel.org/sourceware/lvm2/releases/LVM2.${pkgver}.tgz
         lvm2_install
         lvm2_hook
         11-dm-initramfs.rules)
-sha1sums=('c81acc5e68656144a378e8f49a3cd6dc2598287e'
-          '664258ebd7dd3459f79fffa464b267db0d7109dd'
+sha1sums=('b114b2ef40fca63c6df290a5f1aac54ff3e764aa'
+          '1ec6b847745b1b69004422841eb7442de12b4ba8'
           '81fc438356216abdaead0742555e1719e6ff3127'
           'f6a554eea9557c3c236df2943bb6e7e723945c41')
 validpgpkeys=('6DD4217456569BA711566AC7F06E8FDE7B45DAAC') # Eric Vidal
 
-prepare() {
-  cd LVM2.${pkgver}
-
-  # enable lvmetad
-  sed -i 's|use_lvmetad = 0|use_lvmetad = 1|' conf/example.conf.in
- 
-}
 
 build() {
 
@@ -48,6 +41,7 @@ build() {
         --enable-readline
         --enable-udev_rules
         --enable-udev_sync
+        --enable-use-lvmetad
         --with-cache=internal
         --with-default-dm-run-dir=/run
         --with-default-locking-dir=/run/lock/lvm
